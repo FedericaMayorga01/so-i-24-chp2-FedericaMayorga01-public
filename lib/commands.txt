@@ -1,0 +1,5 @@
+echo Hola
+cd Documents
+cd ..
+clr
+quit
