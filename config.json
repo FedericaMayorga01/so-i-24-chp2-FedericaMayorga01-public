@@ -1,5 +1,10 @@
 {
-    "monitor_interval": 1000,
-    "max_background_jobs": 10,
-    "monitor_metrics": "cpu,memory,disk"
+    "metrics": {
+        "cpu": true,
+        "memory": true,
+        "disk": true,
+        "network": true,
+        "processes": true,
+        "context_switches": true
+    }
 }

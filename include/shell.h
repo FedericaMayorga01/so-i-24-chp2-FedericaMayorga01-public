@@ -1,5 +1,7 @@
 #ifndef SHELL_H
+#define SHELL_H
 
+#include "../include/colors.h"
 #include "../include/commands.h"
 #include "../include/executions.h"
 #include "../include/monitor.h"

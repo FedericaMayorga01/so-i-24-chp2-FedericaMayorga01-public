@@ -1,185 +1,128 @@
 #include "../include/shell.h"
+#include "../include/colors.h"
 
 void prompt(void);
 void choose_execution(char* command);
 
-/*
-** Program initialization and input handling
-*/
+/**
+ * @brief Initializes the shell and handles command input.
+ *
+ * This function serves as the main entry point for the shell. It prints a
+ * welcome message, sets up signal handlers, and then either reads commands
+ * from a specified batch file or enters an interactive loop to handle
+ * user input from stdin.
+ *
+ * @param argc The number of command-line arguments.
+ * @param argv An array of command-line argument strings.
+ * @return Returns 0 upon successful execution.
+ */
 int init_shell(int argc, char* argv[])
 {
     // Welcome message!!
+    printf(COLOR_CYAN COLOR_BOLD);
     printf("╔════════════════════════════════════════════════╗\n");
     printf("║              SURVIVAL TERMINAL v1.0            ║\n");
     printf("║                                                ║\n");
     printf("║        Refuge operating system initiated       ║\n");
     printf("║           May luck be on your side!            ║\n");
     printf("╚════════════════════════════════════════════════╝\n");
+    printf(COLOR_RESET);
     printf("System resources loaded... [OK]\n");
     printf("Monitoring connection established... [OK]\n\n");
 
     setup_signals();
 
     if (argc > 1)
-    { // A batch file was sent
-        // Read commands from the file
+    {
         FILE* file = fopen(argv[1], "r");
         if (file == NULL)
         {
-            fprintf(stderr, "ERROR: Could not access command file '%s'\n", argv[1]);
-            perror("Error details");
+            printf(COLOR_RED "Error opening file: %s" COLOR_RESET, argv[1]);
+            perror("fopen");
             exit(EXIT_FAILURE);
         }
 
         char command[256];
-        int line_number = 1;
-
-        printf("Executing commands from batch file: %s\n\n", argv[1]);
-
-        // The loop executes all commands in the file, fgets handles moving to the next line in each loop
         while (fgets(command, sizeof(command), file) != NULL)
         {
-            // Validation to prevent buffer overflow
-            if (strlen(command) == sizeof(command) - 1 && command[sizeof(command) - 2] != '\n')
-            {
-                fprintf(stderr, "WARNING: Command on line %d is too long, truncated\n", line_number);
-                // Clear the rest of the line from the buffer
-                int c;
-                while ((c = fgetc(file)) != '\n' && c != EOF)
-                    ;
-            }
-
-            // Show which command is being executed
-            printf("[Line %d] Executing: %s", line_number, command);
-
-            // Select what type of execution
             choose_execution(command);
-
-            line_number++;
         }
-
-        if (ferror(file))
-        {
-            fprintf(stderr, "ERROR: Problem reading the command file\n");
-            perror("Error details");
-            fclose(file);
-            exit(EXIT_FAILURE);
-        }
-
         fclose(file);
-        printf("\nBatch execution completed. Shelter systems ready.\n");
     }
     else
     {
-        // If executed without arguments
         char command[256];
-        printf("Interactive mode activated. Type 'quit' to exit the system.\n\n");
-
         while (1)
         {
             prompt();
-
-            if (fgets(command, sizeof(command), stdin) == NULL)
+            if (fgets(command, sizeof(command), stdin) != NULL)
             {
-                // Improved handling of reading errors
-                if (feof(stdin))
-                {
-                    printf("\nEOF signal detected. Closing survival terminal...\n");
-                    break;
-                }
-                else if (ferror(stdin))
-                {
-                    fprintf(stderr, "\nERROR: Failed to read commands from terminal\n");
-                    perror("Error details");
-                    clearerr(stdin); // Clear the error state
-                    continue;
-                }
+                choose_execution(command);
             }
-
-            // Validation to prevent buffer overflow
-            if (strlen(command) == sizeof(command) - 1 && command[sizeof(command) - 2] != '\n')
-            {
-                fprintf(stderr, "WARNING: Command too long, truncated to %zu characters\n", sizeof(command) - 1);
-                // Clear the rest of the line from the buffer
-                int c;
-                while ((c = getchar()) != '\n' && c != EOF)
-                    ;
-            }
-
-            choose_execution(command);
         }
     }
     return 0;
 }
 
-/*
- * Function that prints the prompt
- * for each new command line
+/**
+ * @brief Prints the command prompt.
+ *
+ * This function displays a command prompt showing the current user,
+ * hostname, and working directory, similar to a standard shell.
  */
 void prompt()
 {
     char* user = getenv("USER");
     if (user == NULL)
     {
-        user = "survivor";
+        user = "unknown";
     }
 
     char hostname[1024];
     if (gethostname(hostname, sizeof(hostname)) != 0)
     {
-        fprintf(stderr, "WARNING: Could not get the shelter name\n");
-        strncpy(hostname, "unknown-refuge", sizeof(hostname) - 1);
-        hostname[sizeof(hostname) - 1] = '\0';
+        perror("gethostname");
+        exit(EXIT_FAILURE);
     }
 
     char cwd[1024];
     if (getcwd(cwd, sizeof(cwd)) == NULL)
     {
-        fprintf(stderr, "WARNING: Could not determine the current location\n");
-        strncpy(cwd, "/unknown-location", sizeof(cwd) - 1);
-        cwd[sizeof(cwd) - 1] = '\0';
+        perror("getcwd");
+        exit(EXIT_FAILURE);
     }
 
-    // Print the prompt with the user, hostname, and current working directory
-    printf("🏚️ %s@%s:%s$ ", user, hostname, cwd);
-    fflush(stdout);
+    printf(COLOR_GREEN "%s" COLOR_RESET "@" COLOR_BLUE "%s" COLOR_RESET ":" COLOR_YELLOW "%s" COLOR_RESET "$ ", user,
+           hostname, cwd);
 }
 
-/*
- * Function that chooses the type of execution
- * based on the command syntax
+/**
+ * @brief Chooses the type of command execution.
+ *
+ * It inspects the command string for special characters to determine
+ * if it should be executed in the background ('&'), piped ('|'),
+ * with I/O redirection ('<' or '>'), or as a standard command.
+ *
+ * @param command The command string to analyze and execute.
  */
 void choose_execution(char* command)
 {
-    // Validate that the command is not empty
-    if (command == NULL || strlen(command) == 0)
-    {
-        return;
-    }
-    // Remove the newline character at the end of the command
     command[strcspn(command, "\n")] = 0;
 
-    // Validate that there is still content after removing the newline character
-    if (strlen(command) == 0)
-    {
-        return; // Empty command, do nothing
-    }
-
-    // Verify if the command ends with '&' to execute in the background
     if (command[strlen(command) - 1] == '&')
     {
         execute_command_secondplane(command);
     }
-    else if (strchr(command, '|') != NULL) // Verify if there is a pipe in the code
+    else if (strchr(command, '|') != NULL)
     {
         execute_piped_commands(command);
     }
-    else if (strchr(command, '<') != NULL || strchr(command, '>') != NULL) // Verify if there is a < or > symbol
+    else if (strchr(command, '<') != NULL || strchr(command, '>') != NULL)
     {
         execute_command_redirection(command);
     }
     else
-    { // If there are no special characters, execute the command normally
+    {
         execute_command(command);
     }
 }
