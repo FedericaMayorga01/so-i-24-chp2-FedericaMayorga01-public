@@ -2,6 +2,26 @@
 #include "../include/colors.h"
 #include "../include/monitor.h"
 
+// Forward declarations for monitor functions (if not available during testing)
+void start_monitor_impl() __attribute__((weak));
+void stop_monitor_impl() __attribute__((weak));
+void status_monitor_impl() __attribute__((weak));
+
+void start_monitor_impl()
+{
+    start_monitor();
+}
+
+void stop_monitor_impl()
+{
+    stop_monitor();
+}
+
+void status_monitor_impl()
+{
+    status_monitor();
+}
+
 // Definition of the internal commands array
 Command internals_commands[] = {
     {"cd", command_cd},

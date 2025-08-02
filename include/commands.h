@@ -8,6 +8,9 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+// Forward declaration for set_foreground_pid (from executions.h)
+void set_foreground_pid(pid_t pid);
+
 /**
  * @brief executes an external command
  * if the command is not found in the list of internal commands
