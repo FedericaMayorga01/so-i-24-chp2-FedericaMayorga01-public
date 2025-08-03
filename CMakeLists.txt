@@ -54,3 +54,10 @@ add_executable(survivorShell
 add_subdirectory(tests)
 
 target_link_libraries(survivorShell PRIVATE survShell_lib ${CJSON_LIBRARY})
+
+add_library(unity STATIC lib/unity/unity.c)
+target_include_directories(unity PUBLIC lib/unity)
+
+add_executable(unit_test_shell tests/test_commands.c)
+target_link_libraries(unit_test_shell unity survShell_lib)
+add_test(NAME unit_test_shell COMMAND unit_test_shell)
