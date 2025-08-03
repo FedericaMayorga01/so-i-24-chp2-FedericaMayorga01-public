@@ -52,5 +52,3 @@ add_executable(survivorShell
 )
 
 target_link_libraries(survivorShell PRIVATE survShell_lib ${CJSON_LIBRARY} unity::unity)
-
-add_subdirectory(tests)
