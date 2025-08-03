@@ -14,9 +14,6 @@ runs:
         echo "Contenido de build:"
         ls -l build
 
-        echo "Contenido de build/tests:"
-        ls -l build/tests
-
         CTEST_COMMAND=$(ctest --test-dir build --output-on-failure -VV 2> $CTEST_ERROR_FILE_FLAG 1>$ERROR_FILE_FLAG)
 
         if [ -s $CTEST_ERROR_FILE_FLAG ]; then
