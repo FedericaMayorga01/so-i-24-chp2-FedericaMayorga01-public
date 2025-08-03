@@ -30,6 +30,9 @@ endif()
 # Add your source files
 file(GLOB SOURCES "src/*.c")
 
+find_package(cJSON REQUIRED)
+find_package(unity REQUIRED)
+
 # Add subdirectories
 #add_subdirectory(external/*)
 
