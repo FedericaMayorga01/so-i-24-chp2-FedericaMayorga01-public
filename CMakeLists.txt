@@ -18,11 +18,11 @@ endif()
 
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/generators")
 
-set(CJSON_INCLUDE_DIR "/usr/include")
+set(CJSON_INCLUDE_DIR "/usr/include/cjson")
 set(CJSON_LIBRARY "/usr/lib/x86_64-linux-gnu/libcjson.so")
 
-if(NOT EXISTS "${CJSON_INCLUDE_DIR}/cJSON/cJSON.h")
-  message(FATAL_ERROR "No se encontró el header cJSON.h en ${CJSON_INCLUDE_DIR}/cJSON")
+if(NOT EXISTS "${CJSON_INCLUDE_DIR}/cJSON.h")
+  message(FATAL_ERROR "No se encontró el header cJSON.h en ${CJSON_INCLUDE_DIR}")
 endif()
 
 if(NOT EXISTS "${CJSON_LIBRARY}")
