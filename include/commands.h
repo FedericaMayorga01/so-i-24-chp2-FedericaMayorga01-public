@@ -54,8 +54,11 @@ void command_quit();
  */
 typedef struct
 {
-    char* name;              // Command name
-    void (*func)(char* arg); // Pointer to the function that implements the command
+    /** @brief Nombre del comando */
+    char* name;
+
+    /** @brief Puntero a función que ejecuta el comando */
+    void (*func)(char* arg);
 } Command;
 
 /**
