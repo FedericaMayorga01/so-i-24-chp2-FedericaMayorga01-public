@@ -1,4 +1,4 @@
-#include "../src/commands.c"
+#include "../include/commands.h"
 #include "unity.h"
 #include <stdlib.h>
 #include <string.h>
