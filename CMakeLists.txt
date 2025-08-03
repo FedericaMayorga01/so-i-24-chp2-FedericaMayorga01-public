@@ -18,17 +18,16 @@ endif()
 
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/generators")
 
-find_path(CJSON_INCLUDE_DIR NAMES cJSON.h PATHS /usr/include /usr/local/include)
-find_library(CJSON_LIBRARY NAMES cjson PATHS /usr/lib /usr/local/lib)
+find_path(CJSON_INCLUDE_DIR NAMES cJSON.h PATHS /usr/include/cjson /usr/local/include/cjson)
+find_library(CJSON_LIBRARY NAMES cjson PATHS /usr/lib/x86_64-linux-gnu /usr/local/lib)
 
 if(NOT CJSON_INCLUDE_DIR OR NOT CJSON_LIBRARY)
   message(FATAL_ERROR "Could not find cJSON library and headers")
 endif()
 
 include_directories(${CJSON_INCLUDE_DIR})
-target_link_libraries(tu_target ${CJSON_LIBRARY})
 
-add_executable(myshell
+add_executable(survivorShell
     src/main.c
     src/commands.c
     src/executions.c
@@ -36,7 +35,7 @@ add_executable(myshell
     src/shell.c
 )
 
-add_library(shell_lib STATIC
+add_library(survShell_lib STATIC
     src/commands.c
     src/executions.c
     src/monitor.c
@@ -45,8 +44,9 @@ add_library(shell_lib STATIC
     include/executions.h
     include/monitor.h
     include/shell.h
+    include/colors.h
 )
 
-target_link_libraries(myshell PRIVATE shell_lib cjson::cjson unity::unity)
+target_link_libraries(survivorShell PRIVATE survShell_lib cjson::cjson unity::unity)
 
 add_subdirectory(tests)
