@@ -14,31 +14,35 @@ runs:
         echo "Contenido de build:"
         ls -l build
 
-        CTEST_COMMAND=$(ctest --test-dir build --output-on-failure -VV 2> $CTEST_ERROR_FILE_FLAG 1>$ERROR_FILE_FLAG)
+        ctest --test-dir build --output-on-failure -VV 2> "$CTEST_ERROR_FILE_FLAG" 1> "$ERROR_FILE_FLAG"
 
-        if [ -s $CTEST_ERROR_FILE_FLAG ]; then
+        if [ -s "$CTEST_ERROR_FILE_FLAG" ]; then
           echo "Error: Unit Tests Failed"
           exit 1
         else
           echo "All tests were passed!"
         fi
 
-        gcovr -r $PROJECT_PATH . >> $ERROR_FILE_FLAG
+        gcovr -r "$PROJECT_PATH" . >> "$ERROR_FILE_FLAG" 2>&1
 
         echo "Running: gcovr -r $PROJECT_PATH ."
-        cat $ERROR_FILE_FLAG
+        cat "$ERROR_FILE_FLAG"
 
-        COVERAGE_RESULT=$(grep "TOTAL" $ERROR_FILE_FLAG | awk '{print $NF}' | cut -d '%' -f 1)
+        COVERAGE_RESULT=$(grep "TOTAL" "$ERROR_FILE_FLAG" | awk '{print $NF}' | cut -d '%' -f 1)
 
-        if [ "$(echo "$COVERAGE_RESULT > 5" | bc)" -eq 1 ]; then
-          echo "Coverage is greater than 5%. Nice!"
-          exit 0
-        else
-          echo "Error: Coverage is less than or equal to 5%"
+        if [ -z "$COVERAGE_RESULT" ]; then
+          echo "Error: No se pudo obtener el porcentaje de cobertura"
           exit 1
         fi
 
-    # Upload errors as an artifact, when failed
+        if (( $(echo "$COVERAGE_RESULT > 20" | bc -l) )); then
+          echo "Coverage is greater than 20%. Nice!"
+          exit 0
+        else
+          echo "Error: Coverage is less than or equal to 20%"
+          exit 1
+        fi
+
     - uses: actions/upload-artifact@v4
       if: failure()
       with:
