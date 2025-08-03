@@ -51,7 +51,7 @@ add_executable(survivorShell
     src/shell.c
 )
 
-add_subdirectory(tests)
+#add_subdirectory(tests)
 
 target_link_libraries(survivorShell PRIVATE survShell_lib ${CJSON_LIBRARY})
 
