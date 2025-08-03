@@ -18,12 +18,15 @@ endif()
 
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/generators")
 
-# Buscar cJSON con ruta exacta al header
-find_path(CJSON_INCLUDE_DIR NAMES cJSON/cJSON.h PATHS /usr/include /usr/local/include)
-find_library(CJSON_LIBRARY NAMES libcjson.so cjson PATHS /usr/lib/x86_64-linux-gnu /usr/local/lib)
+set(CJSON_INCLUDE_DIR "/usr/include")
+set(CJSON_LIBRARY "/usr/lib/x86_64-linux-gnu/libcjson.so")
 
-if(NOT CJSON_INCLUDE_DIR OR NOT CJSON_LIBRARY)
-  message(FATAL_ERROR "Could not find cJSON library and headers")
+if(NOT EXISTS "${CJSON_INCLUDE_DIR}/cjson/cJSON.h")
+  message(FATAL_ERROR "No se encontró el header cJSON.h en ${CJSON_INCLUDE_DIR}/cjson")
+endif()
+
+if(NOT EXISTS "${CJSON_LIBRARY}")
+  message(FATAL_ERROR "No se encontró la librería cJSON en ${CJSON_LIBRARY}")
 endif()
 
 include_directories(${CJSON_INCLUDE_DIR})
