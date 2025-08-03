@@ -1,4 +1,5 @@
 #include "../include/monitor.h"
+#include "../lab1/include/metrics.h"
 
 static pid_t monitor_pid = -1;
 static int monitoring = 0;
@@ -71,7 +72,6 @@ void stop_monitor()
  */
 void status_monitor()
 {
-    const char* fifo_path = "/tmp/monitor_fifo";
     int option = 0;
     printf("Monitoring running (PID: %d).\n\n", getpid());
 
@@ -88,6 +88,7 @@ void status_monitor()
     if (scanf("%d", &option) != 1)
     {
         fprintf(stderr, "Error reading input\n");
+        return;
     }
     printf("\n");
 
@@ -96,97 +97,150 @@ void status_monitor()
         return;
     }
 
-    if (mkfifo(fifo_path, 0666) == -1 && errno != EEXIST)
-    {
-        perror("Error creating FIFO");
-        return;
-    }
+    double cpu_usage, memory_usage, disk_usage, network_usage;
+    int process_count, context_switches;
 
-    int fifo_fd = open(fifo_path, O_RDONLY);
-    if (fifo_fd == -1)
+    switch (option)
     {
-        perror("Error opening FIFO");
-        return;
-    }
-
-    char buffer[1024];
-    memset(buffer, 0, sizeof(buffer));
-    ssize_t bytes_read = read(fifo_fd, buffer, sizeof(buffer) - 1);
-    if (bytes_read > 0)
-    {
-        buffer[bytes_read] = '\0';
-        cJSON* json = cJSON_Parse(buffer);
-        if (json)
+    case 1:
+        cpu_usage = get_cpu_usage();
+        if (cpu_usage >= 0)
         {
-            cJSON* cpu_usage = cJSON_GetObjectItem(json, "cpu_usage");
-            cJSON* memory_usage = cJSON_GetObjectItem(json, "memory_usage");
-            cJSON* disk_usage = cJSON_GetObjectItem(json, "disk_usage");
-            cJSON* network_usage = cJSON_GetObjectItem(json, "network_usage");
-            cJSON* process_count = cJSON_GetObjectItem(json, "process_count");
-            cJSON* context_switches = cJSON_GetObjectItem(json, "context_switches");
-
-            if (option == 1 && cpu_usage)
-            {
-                printf("CPU Usage: %.2f%%\n\n", cpu_usage->valuedouble);
-            }
-            if (option == 2 && memory_usage)
-            {
-                printf("Memory Usage: %.2f MB\n\n", memory_usage->valuedouble);
-            }
-            if (option == 3 && disk_usage)
-            {
-                printf("Disk Usage: %.2f GB\n\n", disk_usage->valuedouble);
-            }
-            if (option == 4 && network_usage)
-            {
-                printf("Network Usage: %.2f KB/s\n\n", network_usage->valuedouble);
-            }
-            if (option == 5 && process_count)
-            {
-                printf("Number of Processes: %d\n\n", process_count->valueint);
-            }
-            if (option == 6 && context_switches)
-            {
-                printf("Context Switches: %d\n\n", context_switches->valueint);
-            }
-            if (option == 7)
-            {
-                if (cpu_usage)
-                {
-                    printf("CPU Usage: %.2f%%\n", cpu_usage->valuedouble);
-                }
-                if (memory_usage)
-                {
-                    printf("Memory Usage: %.2f MB\n", memory_usage->valuedouble);
-                }
-                if (disk_usage)
-                {
-                    printf("Disk Usage: %.2f GB\n", disk_usage->valuedouble);
-                }
-                if (network_usage)
-                {
-                    printf("Network Usage: %.2f KB/s\n", network_usage->valuedouble);
-                }
-                if (process_count)
-                {
-                    printf("Number of Processes: %d\n", process_count->valueint);
-                }
-                if (context_switches)
-                {
-                    printf("Context Switches: %d\n", context_switches->valueint);
-                }
-                printf("\n");
-            }
-            cJSON_Delete(json);
+            printf("CPU Usage: %.2f%%\n\n", cpu_usage);
         }
         else
         {
-            fprintf(stderr, "Error parsing the received JSON.\n");
+            printf("Error getting CPU usage\n\n");
         }
+        break;
+
+    case 2:
+        memory_usage = get_memory_usage();
+        if (memory_usage >= 0)
+        {
+            printf("Memory Usage: %.2f%%\n\n", memory_usage);
+        }
+        else
+        {
+            printf("Error getting memory usage\n\n");
+        }
+        break;
+
+    case 3:
+        disk_usage = get_IOdisk();
+        if (disk_usage >= 0)
+        {
+            printf("Disk Usage: %.2f%%\n\n", disk_usage);
+        }
+        else
+        {
+            printf("Error getting disk usage\n\n");
+        }
+        break;
+
+    case 4:
+        network_usage = get_network_transfer_rate();
+        if (network_usage >= 0)
+        {
+            printf("Network Usage: %.2f bytes/s\n\n", network_usage);
+        }
+        else
+        {
+            printf("Error getting network usage\n\n");
+        }
+        break;
+
+    case 5:
+        process_count = get_processcounter();
+        if (process_count >= 0)
+        {
+            printf("Number of Processes: %d\n\n", process_count);
+        }
+        else
+        {
+            printf("Error getting process count\n\n");
+        }
+        break;
+
+    case 6:
+        context_switches = get_context_switchs();
+        if (context_switches >= 0)
+        {
+            printf("Context Switches: %d\n\n", context_switches);
+        }
+        else
+        {
+            printf("Error getting context switches\n\n");
+        }
+        break;
+
+    case 7:
+        printf("=== All System Metrics ===\n");
+
+        cpu_usage = get_cpu_usage();
+        if (cpu_usage >= 0)
+        {
+            printf("CPU Usage: %.2f%%\n", cpu_usage);
+        }
+        else
+        {
+            printf("CPU Usage: Error\n");
+        }
+
+        memory_usage = get_memory_usage();
+        if (memory_usage >= 0)
+        {
+            printf("Memory Usage: %.2f%%\n", memory_usage);
+        }
+        else
+        {
+            printf("Memory Usage: Error\n");
+        }
+
+        disk_usage = get_IOdisk();
+        if (disk_usage >= 0)
+        {
+            printf("Disk Usage: %.2f%%\n", disk_usage);
+        }
+        else
+        {
+            printf("Disk Usage: Error\n");
+        }
+
+        network_usage = get_network_transfer_rate();
+        if (network_usage >= 0)
+        {
+            printf("Network Usage: %.2f bytes/s\n", network_usage);
+        }
+        else
+        {
+            printf("Network Usage: Error\n");
+        }
+
+        process_count = get_processcounter();
+        if (process_count >= 0)
+        {
+            printf("Number of Processes: %d\n", process_count);
+        }
+        else
+        {
+            printf("Number of Processes: Error\n");
+        }
+
+        context_switches = get_context_switchs();
+        if (context_switches >= 0)
+        {
+            printf("Context Switches: %d\n", context_switches);
+        }
+        else
+        {
+            printf("Context Switches: Error\n");
+        }
+        printf("\n");
+        break;
+
+    default:
+        printf("Invalid option. Please select 1-8.\n\n");
+        break;
     }
-    else
-    {
-        fprintf(stderr, "Error reading data from FIFO.\n");
-    }
-    close(fifo_fd);
 }

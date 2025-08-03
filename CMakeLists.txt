@@ -19,14 +19,18 @@ set(CJSON_INCLUDE_DIR "/usr/include/cjson")
 set(CJSON_LIBRARY "/usr/lib/x86_64-linux-gnu/libcjson.so")
 
 if(NOT EXISTS "${CJSON_INCLUDE_DIR}/cJSON.h")
-  message(FATAL_ERROR "No se encontró el header cJSON.h en ${CJSON_INCLUDE_DIR}")
+  message(FATAL_ERROR "Could not find the cJSON.h header in ${CJSON_INCLUDE_DIR}")
 endif()
 
 if(NOT EXISTS "${CJSON_LIBRARY}")
-  message(FATAL_ERROR "No se encontró la librería cJSON en ${CJSON_LIBRARY}")
+  message(FATAL_ERROR "Could not find the cJSON library in ${CJSON_LIBRARY}")
 endif()
 
 include_directories(${CJSON_INCLUDE_DIR})
+
+set(LAB1_SOURCES
+    lab1/src/metrics.c
+)
 
 add_library(survShell_lib STATIC
     src/commands.c
@@ -38,6 +42,7 @@ add_library(survShell_lib STATIC
     include/monitor.h
     include/shell.h
     include/colors.h
+    ${LAB1_SOURCES} 
 )
 
 add_executable(survivorShell
@@ -46,15 +51,14 @@ add_executable(survivorShell
     src/executions.c
     src/monitor.c
     src/shell.c
+    ${LAB1_SOURCES} 
 )
 
 target_link_libraries(survivorShell PRIVATE survShell_lib ${CJSON_LIBRARY})
 
-# Agregar Unity
 add_library(unity STATIC lib/unity/unity.c)
 target_include_directories(unity PUBLIC lib/unity)
 
-# Agregar el test
 add_executable(unit_test_shell tests/test_commands.c)
 target_link_libraries(unit_test_shell unity survShell_lib ${CJSON_LIBRARY})
 add_test(NAME unit_test_shell COMMAND unit_test_shell)
