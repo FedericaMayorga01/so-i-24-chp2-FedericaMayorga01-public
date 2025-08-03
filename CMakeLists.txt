@@ -18,8 +18,15 @@ endif()
 
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/generators")
 
-find_package(cJSON REQUIRED)
-find_package(unity REQUIRED)
+find_path(CJSON_INCLUDE_DIR NAMES cJSON.h PATHS /usr/include /usr/local/include)
+find_library(CJSON_LIBRARY NAMES cjson PATHS /usr/lib /usr/local/lib)
+
+if(NOT CJSON_INCLUDE_DIR OR NOT CJSON_LIBRARY)
+  message(FATAL_ERROR "Could not find cJSON library and headers")
+endif()
+
+include_directories(${CJSON_INCLUDE_DIR})
+target_link_libraries(tu_target ${CJSON_LIBRARY})
 
 add_executable(myshell
     src/main.c
