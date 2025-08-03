@@ -31,7 +31,7 @@ endif()
 file(GLOB SOURCES "src/*.c")
 
 # Add subdirectories
-add_subdirectory(external/*)
+#add_subdirectory(external/*)
 
 # Create executable
 add_executable(${PROJECT_NAME} ${SOURCES})
