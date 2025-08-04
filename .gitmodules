@@ -1,4 +1,4 @@
 [submodule "lab1"]
 	path = lab1
-	url = git@github.com:ICOMP-UNC/so-i-24-FedericaMayorga01.git
+	url = https://github.com/ICOMP-UNC/so-i-24-FedericaMayorga01.git
 	branch = develop
