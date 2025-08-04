@@ -8,6 +8,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 enable_testing()
 
 include_directories(include)
+include_directories(lab1/include)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage -O0 -g")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -O0 -g")
@@ -47,11 +48,6 @@ add_library(survShell_lib STATIC
 
 add_executable(survivorShell
     src/main.c
-    src/commands.c
-    src/executions.c
-    src/monitor.c
-    src/shell.c
-    ${LAB1_SOURCES} 
 )
 
 target_link_libraries(survivorShell PRIVATE survShell_lib ${CJSON_LIBRARY})
