@@ -4,13 +4,6 @@ description: "Executes a compilation."
 runs:
   using: "composite"
   steps:
-    - name: Clone Lab1 Repository
-      shell: bash
-      run: |
-        echo "Cloning lab1 repository..."
-        git clone -b master https://github.com/FedericaMayorga01/so-i-24-FedericaMayorga01-public.git lab1
-        echo "Lab1 cloned successfully"
-
     - name: Install libcjson-dev
       shell: bash
       run: |
