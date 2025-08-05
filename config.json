@@ -1,0 +1,10 @@
+{
+    "metrics": {
+        "cpu": true,
+        "memory": true,
+        "disk": true,
+        "network": true,
+        "processes": true,
+        "context_switches": true
+    }
+}
