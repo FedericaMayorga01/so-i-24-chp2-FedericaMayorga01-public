@@ -13,6 +13,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Initialize submodules
+        run: |
+          echo "=== Initializing submodules ==="
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git submodule sync --recursive
+          git submodule update --init --recursive --force
+          echo "=== Submodule status ==="
+          git submodule status
+          echo "=== Lab1 contents ==="
+          ls -la lab1/
+          find lab1/ -name "*.c" -o -name "*.h" | head -10
 
       - name: Install dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
