@@ -1,5 +1,6 @@
 #include "../include/shell.h"
 #include "../include/colors.h"
+#include "../include/shell_hooks.h"
 
 void prompt(void);
 void choose_execution(char* command);
@@ -29,6 +30,14 @@ int init_shell(int argc, char* argv[])
     printf(COLOR_RESET);
     printf("System resources loaded... [OK]\n");
     printf("Monitoring connection established... [OK]\n\n");
+
+    register_extension_commands();
+
+    if (extension_command_count > 0)
+    {
+        printf("Extension commands loaded... [%d registered]\n", extension_command_count);
+    }
+    printf("\n");
 
     setup_signals();
 
