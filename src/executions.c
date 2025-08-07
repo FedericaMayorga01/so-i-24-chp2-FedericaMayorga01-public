@@ -39,6 +39,13 @@ void execute_command(char* command)
         }
     }
 
+    // Check extension commands (simple version)
+    char* simple_args[2] = {command_name, arg};
+    if (handle_extension_command(command_name, simple_args))
+    {
+        return; // Extension command executed
+    }
+
     external_command(command);
 
     printf("Command not found: %s\n", command_name);
