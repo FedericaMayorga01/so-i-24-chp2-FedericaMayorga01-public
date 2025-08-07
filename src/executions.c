@@ -1,6 +1,7 @@
 #include "../include/executions.h"
 #include "../include/colors.h"
 #include "../include/shell_hooks.h"
+#include <signal.h>
 
 // Global variable for the job id
 static int job_id = 1;
@@ -27,7 +28,17 @@ void execute_command(char* command)
         return; // Empty command
     }
 
+    // Parse all arguments for extension commands
+    char* args[64];
+    args[0] = command_name;
+    int arg_count = 1;
     char* arg = strtok(NULL, " ");
+    while (arg != NULL && arg_count < 63)
+    {
+        args[arg_count++] = arg;
+        arg = strtok(NULL, " ");
+    }
+    args[arg_count] = NULL;
 
     // Check if the command is an internal command
     for (int i = 0; i < size_internal_commands; i++)
@@ -39,11 +50,9 @@ void execute_command(char* command)
         }
     }
 
-    // Check extension commands (simple version)
-    char* simple_args[2] = {command_name, arg};
-    if (handle_extension_command(command_name, simple_args))
+    if (handle_extension_command(command_name, args))
     {
-        return; // Extension command executed
+        return; // Extension command executed successfully
     }
 
     external_command(command);

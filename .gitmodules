@@ -1,3 +1,4 @@
 [submodule "lab1"]
 	path = lab1
 	url = https://github.com/FedericaMayorga01/so-i-24-FedericaMayorga01-public.git
+	branch = develop
