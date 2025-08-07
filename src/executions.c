@@ -1,5 +1,6 @@
 #include "../include/executions.h"
 #include "../include/colors.h"
+#include "../include/shell_hooks.h"
 
 // Global variable for the job id
 static int job_id = 1;

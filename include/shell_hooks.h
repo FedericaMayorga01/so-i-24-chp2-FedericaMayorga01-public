@@ -22,9 +22,10 @@
  * @var ExtensionCommand::description
  *   A brief description of the command (maximum 255 characters plus null terminator).
  */
-typedef struct {
+typedef struct
+{
     char command[64];
-    void (*handler)(char **args);
+    void (*handler)(char** args);
     char description[256];
 } ExtensionCommand;
 
@@ -45,7 +46,7 @@ extern void register_extension_commands(void);
  * @param args    An array of arguments to pass to the command. The array must be NULL-terminated.
  * @return An integer status code: 0 on success, or a negative value on error.
  */
-extern int handle_extension_command(const char *command, char **args);
+extern int handle_extension_command(const char* command, char** args);
 
 /**
  * @brief Displays help information for shell extensions.
@@ -88,7 +89,7 @@ void __attribute__((weak)) register_extension_commands(void);
  * @param args    An array of arguments for the command.
  * @return An integer status code: 0 on success, or a negative value on error.
  */
-int __attribute__((weak)) handle_extension_command(const char *command, char **args);
+int __attribute__((weak)) handle_extension_command(const char* command, char** args);
 
 /**
  * @brief Weak function to show help for shell extensions.

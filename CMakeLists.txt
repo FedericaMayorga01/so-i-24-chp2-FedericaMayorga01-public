@@ -38,10 +38,12 @@ add_library(survShell_lib STATIC
     src/executions.c
     src/monitor.c
     src/shell.c
+    src/shell_hooks.c
     include/commands.h
     include/executions.h
     include/monitor.h
     include/shell.h
+    include/shell_hooks.h
     include/colors.h
     ${LAB1_SOURCES} 
 )
