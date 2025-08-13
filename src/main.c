@@ -2,7 +2,7 @@
 #include "../include/executions.h"
 #include "../include/monitor.h"
 #include "../include/shell.h"
-#include "../lab1/include/metrics.h"
+#include "../lab1/include/expose_metrics.h"
 
 #include <cjson/cJSON.h>
 #include <stdio.h>
