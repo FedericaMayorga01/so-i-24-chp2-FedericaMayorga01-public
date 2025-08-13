@@ -10,6 +10,13 @@ runs:
         sudo apt-get update
         sudo apt-get install -y libcjson-dev
 
+    - name: Install Prometheus C Client
+      shell: bash
+      run: |
+        # Usar el script de instalación del lab1
+        chmod +x ./lab1/install.sh
+        cd lab1 && ./install.sh
+
     - name: Compile
       shell: bash
       run: |

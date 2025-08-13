@@ -31,6 +31,7 @@ include_directories(${CJSON_INCLUDE_DIR})
 
 set(LAB1_SOURCES
     lab1/src/metrics.c
+    lab1/src/expose_metrics.c
 )
 
 add_library(survShell_lib STATIC
@@ -52,11 +53,11 @@ add_executable(survivorShell
     src/main.c
 )
 
-target_link_libraries(survivorShell PRIVATE survShell_lib ${CJSON_LIBRARY})
+target_link_libraries(survivorShell PRIVATE survShell_lib prom promhttp pthread ${CJSON_LIBRARY})
 
 add_library(unity STATIC lib/unity/unity.c)
 target_include_directories(unity PUBLIC lib/unity)
 
 add_executable(unit_test_shell tests/test_commands.c)
-target_link_libraries(unit_test_shell unity survShell_lib ${CJSON_LIBRARY})
+target_link_libraries(unit_test_shell unity survShell_lib prom promhttp pthread ${CJSON_LIBRARY})
 add_test(NAME unit_test_shell COMMAND unit_test_shell)
